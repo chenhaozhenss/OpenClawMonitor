@@ -19,6 +19,7 @@ class OpenClawRelayManager: ObservableObject {
     @Published var lastUpdated: String = "Connecting..."
     @Published var isOnline: Bool = false
     
+    // ⚠️ Server IP
     private let apiURL = "http://204.44.113.111:19999/usage/william"
     
     init() {
@@ -49,46 +50,6 @@ class OpenClawRelayManager: ObservableObject {
 }
 
 // --- UI ---
-struct MenuView: View {
-    @StateObject var manager = OpenClawRelayManager()
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: manager.isOnline ? "waveform.path.ecg" : "exclamationmark.triangle")
-                    .foregroundColor(manager.isOnline ? .green : .red)
-                Text(manager.isOnline ? "OpenClaw Live" : "Offline").font(.headline)
-            }
-            Divider()
-            VStack(alignment: .leading, spacing: 5) {
-                Label("\(manager.tokens) Tokens", systemImage: "cpu")
-                Label("$\(String(format: "%.4f", manager.cost))", systemImage: "dollarsign.circle")
-            }.font(.system(.body, design: .monospaced))
-            Divider()
-            Text(manager.lastUpdated).font(.caption2).foregroundColor(.secondary)
-            Button("Quit") { NSApplication.shared.terminate(nil) }
-        }
-        .padding()
-        .frame(width: 200)
-    }
-}
-
-@main
-struct OpenClawMonitorApp: App {
-    @StateObject private var manager = OpenClawRelayManager()
-    
-    var body: some Scene {
-        MenuBarExtra {
-            MenuView(manager: manager)
-        } label: {
-            HStack(spacing: 4) {
-                Image(systemName: "bolt.circle.fill")
-                Text("\(manager.tokens)")
-                    .font(.system(.body, design: .monospaced))
-            }
-        }
-    }
-}
-
 struct MenuView: View {
     @ObservedObject var manager: OpenClawRelayManager
     
@@ -134,5 +95,22 @@ struct MenuView: View {
         }
         .padding()
         .frame(width: 220)
+    }
+}
+
+@main
+struct OpenClawMonitorApp: App {
+    @StateObject private var manager = OpenClawRelayManager()
+    
+    var body: some Scene {
+        MenuBarExtra {
+            MenuView(manager: manager)
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: "bolt.circle.fill")
+                Text("\(manager.tokens)")
+                    .font(.system(.body, design: .monospaced))
+            }
+        }
     }
 }
